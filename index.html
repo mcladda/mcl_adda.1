@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="mcl_adda - A platform for storing, sharing, and downloading photos with a nature and photography theme.">
+    <title>mcl_adda - Photo Storage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background: linear-gradient(45deg, #56ab2f, #a8e063);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+        }
+        .photo-upload {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .photo-upload h2 {
+            font-size: 2rem;
+            color: #56ab2f;
+            margin-bottom: 15px;
+        }
+        .photo-upload input[type="file"] {
+            padding: 10px;
+            background-color: #a8e063;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .photo-upload button {
+            background-color: #56ab2f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .photo-upload button:hover {
+            background-color: #3e8927;
+        }
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .photo-gallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 30px;
+        }
+        footer p {
+            margin: 0;
+        }
+        footer a {
+            color: #a8e063;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>mcl_adda - Your Photo Haven</h1>
+        <p>Store, share, and download your memories</p>
+    </header>
+
+    <main>
+        <section class="photo-upload">
+            <h2>Upload Your Photos</h2>
+            <input type="file" id="photoInput" accept="image/*" multiple>
+            <br><br>
+            <button onclick="uploadPhotos()">Upload</button>
+        </section>
+
+        <section class="photo-gallery" id="photoGallery">
+            <!-- Uploaded photos will be displayed here -->
+        </section>
+    </main>
+
+    <footer>
+        <p>Contact: <a href="mailto:mcladda9@gmail.com">mcladda9@gmail.com</a></p>
+    </footer>
+
+    <script>
+        const photoGallery = document.getElementById('photoGallery');
+
+        function uploadPhotos() {
+            const photoInput = document.getElementById('photoInput');
+            const files = photoInput.files;
+
+            for (let i = 0; i < files.length; i++) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    photoGallery.appendChild(img);
+                };
+                reader.readAsDataURL(files[i]);
+            }
+        }
+    </script>
+
+</body>
+</html>
