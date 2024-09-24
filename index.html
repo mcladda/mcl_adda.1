@@ -1,134 +1,112 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="mcl_adda - A platform for storing, sharing, and downloading photos with a nature and photography theme.">
-    <title>mcl_adda - Photo Storage</title>
+    <title>MCL Adda</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        /* Basic page styles */
+        body, html {
             margin: 0;
             padding: 0;
-            color: #333;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
         }
-        header {
-            background: linear-gradient(45deg, #56ab2f, #a8e063);
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        header h1 {
-            font-size: 2.5rem;
-            margin: 0;
-        }
-        main {
-            padding: 20px;
-        }
-        .photo-upload {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .photo-upload h2 {
-            font-size: 2rem;
-            color: #56ab2f;
-            margin-bottom: 15px;
-        }
-        .photo-upload input[type="file"] {
-            padding: 10px;
-            background-color: #a8e063;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-        .photo-upload button {
-            background-color: #56ab2f;
-            color: white;
+
+        #captureButton {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             padding: 10px 20px;
-            border: none;
-            margin-top: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-        }
-        .photo-upload button:hover {
-            background-color: #3e8927;
-        }
-        .photo-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .photo-gallery img {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        footer {
-            background-color: #333;
+            background-color: #4CAF50;
             color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        #camera {
+            display: none;
+        }
+
+        .content {
+            z-index: 1;
             text-align: center;
-            padding: 10px 0;
-            margin-top: 30px;
+            color: white;
         }
-        footer p {
-            margin: 0;
+
+        h1 {
+            font-size: 40px;
         }
-        footer a {
-            color: #a8e063;
-            text-decoration: none;
+
+        p {
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>mcl_adda - Your Photo Haven</h1>
-        <p>Store, share, and download your memories</p>
-    </header>
+    <!-- Capture Button -->
+    <button id="captureButton">Capture Background Photo</button>
 
-    <main>
-        <section class="photo-upload">
-            <h2>Upload Your Photos</h2>
-            <input type="file" id="photoInput" accept="image/*" multiple>
-            <br><br>
-            <button onclick="uploadPhotos()">Upload</button>
-        </section>
+    <!-- Hidden Video Element for Camera Access -->
+    <video id="camera" autoplay playsinline></video>
 
-        <section class="photo-gallery" id="photoGallery">
-            <!-- Uploaded photos will be displayed here -->
-        </section>
-    </main>
-
-    <footer>
-        <p>Contact: <a href="mailto:mcladda9@gmail.com">mcladda9@gmail.com</a></p>
-    </footer>
+    <!-- Content to Display on the Page -->
+    <div class="content">
+        <h1>Welcome to MCL Adda</h1>
+        <p>Photography, nature, and creativity come together.</p>
+        <p>Contact us at: mcladda9@gmail.com</p>
+    </div>
 
     <script>
-        const photoGallery = document.getElementById('photoGallery');
+        const captureButton = document.getElementById('captureButton');
+        const camera = document.getElementById('camera');
 
-        function uploadPhotos() {
-            const photoInput = document.getElementById('photoInput');
-            const files = photoInput.files;
+        // Set up camera access when the user clicks the button
+        captureButton.addEventListener('click', function() {
+            // Ask for camera access
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        // Stream the camera video
+                        camera.srcObject = stream;
+                        camera.style.display = 'block';
+                        
+                        // Capture a frame after 1 second
+                        setTimeout(function() {
+                            // Create a canvas to draw the video frame
+                            const canvas = document.createElement('canvas');
+                            canvas.width = camera.videoWidth;
+                            canvas.height = camera.videoHeight;
 
-            for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    photoGallery.appendChild(img);
-                };
-                reader.readAsDataURL(files[i]);
+                            const context = canvas.getContext('2d');
+                            context.drawImage(camera, 0, 0, canvas.width, canvas.height);
+
+                            // Stop the camera stream
+                            stream.getTracks().forEach(track => track.stop());
+
+                            // Use the image as the background
+                            const imageData = canvas.toDataURL('image/png');
+                            document.body.style.backgroundImage = `url(${imageData})`;
+                            
+                            // Hide the camera video
+                            camera.style.display = 'none';
+                        }, 1000); // Wait 1 second to capture the image
+                    })
+                    .catch(function(error) {
+                        console.error('Camera access denied:', error);
+                    });
+            } else {
+                console.error('getUserMedia not supported in this browser.');
             }
-        }
+        });
     </script>
 
 </body>
